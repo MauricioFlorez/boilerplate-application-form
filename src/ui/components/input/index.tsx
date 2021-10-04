@@ -42,7 +42,8 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-type ChangeHandler = (value: string) => void;
+// Suporting formik default pattern broken in Onchage type
+type ChangeHandler = (value: string, name: string) => void;
 type InputType =
   | 'text'
   | 'textarea'
@@ -94,10 +95,10 @@ function InputControl(props: Props): JSX.Element {
   // and null, boolean, and array values may be passed in. This won't throw an error
   // but it will render the value toString in the input, which is bad UX.
   const normalizedValue = typeof value === 'string' || typeof value === 'number' ? value : undefined;
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
     if (debouncedOnChange) {
-      debouncedOnChange(e.target.value);
+      // Providing support to formik format by updating propely form vlaues
+      debouncedOnChange(e.target.value, e.target.name);
     }
   }
 
@@ -186,10 +187,7 @@ export function Input(props: Props): JSX.Element {
   return (
     <StyledInputWrapper type={type}>
       {/* eslint-disable-next-line */}
-      <InputControl
-        {...props}
-        style={styles}
-      />
+      <InputControl {...props} style={styles} />
       <div className="input-icon">{icon}</div>
       {appendText ? (
         <StyledAppendedText ref={targetRef}>
